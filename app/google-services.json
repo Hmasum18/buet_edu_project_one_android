@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "384400786106",
+    "firebase_url": "https://edu1-52b30.firebaseio.com",
+    "project_id": "edu1-52b30",
+    "storage_bucket": "edu1-52b30.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:384400786106:android:88016c13092897d1b67883",
+        "android_client_info": {
+          "package_name": "com.example.buet_edu_project_one_vmasum"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "384400786106-i7o60oknfuotqm5amn3jimir5rg83k97.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.buet_edu_project_one_vmasum",
+            "certificate_hash": "da8e273e99d33bd7f0671a288dbda99e53dfb9f7"
+          }
+        },
+        {
+          "client_id": "384400786106-m47scj9n5kdt9cvbu4v6qbqiiatedria.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLaDEIA9Ifu3av9-Q-wuaUMUuDtbLXNSU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "384400786106-m47scj9n5kdt9cvbu4v6qbqiiatedria.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
