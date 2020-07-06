@@ -19,10 +19,13 @@
             android:padding="5dp">
 
             <TextView
+                android:layout_gravity="center"
+                android:transitionName="problemTitleTransition"
                 android:id="@+id/probActvTitleId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
+                android:textColor="@color/bgBlue"
                 android:text="Problem title"
                 android:textSize="40sp"
                 android:textStyle="bold" />

@@ -18,7 +18,7 @@ import java.util.Map;
 ///ohter objects return null
 ///you can use these to chk if a filed exist or not
 public class Problem {
-   // public static final String TAG = "ProblemProperties:";
+    public static final String TAG = "ProblemProperties:";
 
     private ArrayList<String> ans_images = new ArrayList<>();
     private int ans_type = -1;
@@ -115,7 +115,7 @@ public class Problem {
         obj = probMap.get("title");
         if(obj!=null)
              title = String.valueOf(obj);
-        //Log.w(TAG,title);
+        Log.w(TAG,title);
     }
 
     public Problem(JSONObject object,Map<String,Object>probMap)

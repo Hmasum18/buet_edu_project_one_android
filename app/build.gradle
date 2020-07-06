@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.buet_edu_project_one_vmasum"
-        minSdkVersion 23
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -46,4 +46,6 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     // Glide v4 uses this new annotation processor -- see https://bumptech.github.io/glide/doc/generatedapi.html
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+
+    implementation 'com.google.android.material:material:1.1.0'
 }

@@ -6,6 +6,10 @@ import androidx.viewpager.widget.ViewPager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.transition.ChangeBounds;
+import android.transition.Fade;
+import android.transition.Transition;
+import android.transition.TransitionSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +21,8 @@ import com.example.buet_edu_project_one_vmasum.DataBase.Problem;
 import com.example.buet_edu_project_one_vmasum.DataBase.RunTimeDB;
 import com.example.buet_edu_project_one_vmasum.DataBase.Schema;
 import com.example.buet_edu_project_one_vmasum.R;
+import com.example.buet_edu_project_one_vmasum.Utils.EnterSharedElementCallback;
+import com.example.buet_edu_project_one_vmasum.Utils.TextSizeTransition;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -30,6 +36,14 @@ public class ProblemActivity extends AppCompatActivity implements View.OnClickLi
     private  TextView probRestriction,probSchema,probOptions,probAns_type,probAnswer,probSolSchema,probExplanation;
     private ViewPager des_images,ans_images;
     private Button probSchemaButton,probSolutionSchemaButton;
+
+    public static Transition makeEnterTransition() {
+        Transition fade = new Fade();
+        fade.excludeTarget(android.R.id.navigationBarBackground, true);
+        fade.excludeTarget(android.R.id.statusBarBackground, true);
+        return fade;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,8 +51,34 @@ public class ProblemActivity extends AppCompatActivity implements View.OnClickLi
 
         Intent intent = this.getIntent();
         Bundle bundle = intent.getExtras();
+        int left = bundle.getInt("titlePosition");
         int problemIdx = bundle.getInt("problemId");
         problem = RunTimeDB.getInstance().getProblems().get(problemIdx);
+
+       // getWindow().setEnterTransition(makeEnterTransition());
+
+        TransitionSet set = new TransitionSet();
+        set.setOrdering(TransitionSet.ORDERING_TOGETHER);
+
+        Transition changeBounds = new ChangeBounds();
+        changeBounds.addTarget(R.id.probActvTitleId);
+        changeBounds.addTarget(problem.getTitle());
+        set.addTransition(changeBounds);
+
+        Transition textSize = new TextSizeTransition();
+        textSize.addTarget(R.id.probActvTitleId);
+        textSize.addTarget(problem.getTitle());
+        set.addTransition(textSize);
+
+        /*Transition textPadding = new TestPaddingTransition();
+        textSize.addTarget(R.id.probActvTitleId);
+        textSize.addTarget(problem.getTitle());
+        set.addTransition(textPadding);*/
+
+        set.setDuration(500);
+        getWindow().setSharedElementEnterTransition(set);
+        setEnterSharedElementCallback(new EnterSharedElementCallback(this,left));
+
 
         probTitle = findViewById(R.id.probActvTitleId);
         probAuthor = findViewById(R.id.probActvAuthorId);
@@ -96,6 +136,7 @@ public class ProblemActivity extends AppCompatActivity implements View.OnClickLi
 
 
         probTitle.setText(title);
+        Log.w(TAG,"Gravity title"+probTitle.getGravity()+"");
         probAuthor.setText(author);
         probCategory.setText(category);
         probDifficulty.setText(difficulty);
@@ -182,7 +223,7 @@ public class ProblemActivity extends AppCompatActivity implements View.OnClickLi
                 stringBuilder.append("      useSkin: "+element.isUseSkin() ).append("\n");
                 stringBuilder.append("      indX:"+ element.getIndX()).append("\n");
                 stringBuilder.append("      indY:"+ element.getIndY()).append("\n");
-                stringBuilder.append("      text:" +element.getText()).append("\n");
+                stringBuilder.append("      splash_logo:" +element.getText()).append("\n");
             }
             idx++;
         }
@@ -226,5 +267,11 @@ public class ProblemActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+       // finishAfterTransition();
+        super.onBackPressed();
     }
 }

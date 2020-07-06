@@ -5,6 +5,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.transition.Explode;
+import android.view.Window;
 
 import com.example.buet_edu_project_one_vmasum.Adapters.ProblemsAdapter;
 import com.example.buet_edu_project_one_vmasum.DataBase.RunTimeDB;
@@ -31,40 +33,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        getDataFromFireStore();
-
         adapter = new ProblemsAdapter(this);
         RecyclerView recyclerView = findViewById(R.id.problemsRecyclerViewId);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this,1);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(adapter);
-
     }
 
-    public void getDataFromFireStore()
-    {
-        CollectionReference colRef = FirebaseFirestore.getInstance().collection("problem");
-        colRef.get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                        for(DocumentSnapshot snapshot : list)
-                        {
-                            if(snapshot.exists())
-                            {
-                                RunTimeDB.getInstance().addNewProblem(snapshot.getData());
-                                //  Log.w(TAG," title "+ problem.getTitle());
-                             /*   try {
-                                    JSONObject jsonObject = JSONBuilder.mapToJSON(snapshot.getData());
-                                    RunTimeDB.getInstance().addNewProblem(jsonObject,snapshot.getData());
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }*/
-                            }
-                        }
-                        adapter.notifyDataSetChanged();
-                    }
-                });
-    }
+
 }

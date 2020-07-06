@@ -236,7 +236,7 @@ public class Schema {
                     if(obj!=null)
                         useSkin = Boolean.parseBoolean(String.valueOf(obj));
 
-                    obj = map.get("text");
+                    obj = map.get("splash_logo");
                     if(obj!=null)
                         text = String.valueOf(obj);
                 }
