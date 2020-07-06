@@ -1,6 +1,9 @@
 package com.example.buet_edu_project_one_vmasum.Activities;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,11 +30,23 @@ public class MainActivity extends AppCompatActivity {
 
 
     public static final String TAG = "MainActivity:";
-     public ProblemsAdapter adapter;
+
+
+    public ProblemsAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ///set toolbar instead of actionbar
+        Toolbar toolbar = findViewById(R.id.mainActivityToolbar);
+        setSupportActionBar(toolbar);
+
+        ///set the nav drawer
+        DrawerLayout drawerLayout = findViewById(R.id.mainActivityDrawerLayout);
+        ActionBarDrawerToggle toggle =new  ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.open_nav,R.string.close_nav);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
 
         adapter = new ProblemsAdapter(this);
         RecyclerView recyclerView = findViewById(R.id.problemsRecyclerViewId);

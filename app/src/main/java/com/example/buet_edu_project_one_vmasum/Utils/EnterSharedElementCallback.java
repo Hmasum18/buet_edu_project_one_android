@@ -14,7 +14,6 @@ import java.util.List;
 
 public class EnterSharedElementCallback extends SharedElementCallback {
     private static final String TAG = "EnterSharedCallback:";
-
     private final float mStartTextSize;
     private final float mEndTextSize;
     private final int mStartLeft;
@@ -28,13 +27,12 @@ public class EnterSharedElementCallback extends SharedElementCallback {
 
     @Override
     public void onSharedElementStart(List<String> sharedElementNames, List<View> sharedElements, List<View> sharedElementSnapshots) {
-      //  Log.w(TAG, "=== onSharedElementStart(List<String>, List<View>, List<View>)");
         TextView textView = (TextView) sharedElements.get(0);
         // Setup the TextView's start values.
-        Log.w(TAG,"start:"+mStartTextSize);
+      //  Log.w(TAG,"start:"+mStartTextSize);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, mStartTextSize);
-        Log.w(TAG,"Start left:"+mStartLeft);
-       textView.setLeft(mStartLeft+63);
+       // Log.w(TAG,"Start left:"+mStartLeft);
+        textView.setLeft(mStartLeft+110);
     }
 
     @Override

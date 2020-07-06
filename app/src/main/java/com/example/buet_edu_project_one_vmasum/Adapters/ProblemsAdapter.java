@@ -9,6 +9,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -59,19 +60,21 @@ public class ProblemsAdapter extends RecyclerView.Adapter<ProblemsAdapter.Proble
         holder.cat_icon.setImageResource(Constant.CAT_ICONS[problem.getCategory()]);
         holder.probAuthor.setText(author);
         holder.probCategory.setText(category);
-        ValueAnimator animator = ValueAnimator.ofFloat(0f,50f);
-        animator.setDuration(1000);
-        animator.start();
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0f,50f);
+        valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator()); // increase the speed first and then decrease
+        valueAnimator.setDuration(1000);
+        valueAnimator.start();
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                float temp = (float)(animation.getAnimatedValue());
-                int haha = (int) temp;
-                holder.succssRateBar.setProgress(haha);
-                holder.probSuccessRate.setText(haha+"%");
+                float  progress = (float)(animation.getAnimatedValue());
+               String text = (int)progress +"%";
+                holder.succssRateBar.setProgress((int) progress);
+                holder.probSuccessRate.setText(text);
             }
-
         });
+
         holder.probSeries.setText(series);
 
         holder.probCardView.setOnClickListener(new View.OnClickListener() {

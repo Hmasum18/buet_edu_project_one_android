@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">buet_edu_project_one_Vmasum</string>
+    <string name="open_nav">open navigation drawer</string>
+    <string name="close_nav">close navigation drawer</string>
 </resources>
