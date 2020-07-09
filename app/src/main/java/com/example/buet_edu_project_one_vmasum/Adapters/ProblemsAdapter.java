@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -30,6 +32,7 @@ import java.util.Date;
 public class ProblemsAdapter extends RecyclerView.Adapter<ProblemsAdapter.ProblemViewHolder> {
 
     private Activity activity;
+    private  int  lastScaleAnimatedPosition = -1;
 
     public ProblemsAdapter(Activity activity) {
         this.activity = activity;
@@ -92,6 +95,18 @@ public class ProblemsAdapter extends RecyclerView.Adapter<ProblemsAdapter.Proble
                 activity.startActivity(intent,options.toBundle());
             }
         });
+
+       /* if(position>lastScaleAnimatedPosition)
+        {
+            //set cardview aninatin
+            ScaleAnimation scaleAnimation = new ScaleAnimation(0f,1f,0f,1f,
+                    Animation.RELATIVE_TO_SELF,0.5f,
+                    Animation.RELATIVE_TO_SELF,0.5f);
+            scaleAnimation.setDuration(800);
+            holder.probCardView.startAnimation(scaleAnimation);
+            lastScaleAnimatedPosition = position;
+        }*/
+
     }
 
     @Override

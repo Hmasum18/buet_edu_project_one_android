@@ -2,7 +2,7 @@
 <resources>
 
     <dimen name="small_text_size">25sp</dimen>
-    <dimen name="large_text_size">40sp</dimen>
+    <dimen name="large_text_size">30sp</dimen>
     <dimen name="startLeft">119</dimen>
     <dimen name="endLeft">160</dimen>
 

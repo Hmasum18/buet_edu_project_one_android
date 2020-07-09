@@ -1,14 +1,19 @@
 package com.example.buet_edu_project_one_vmasum.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.transition.ChangeTransform;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.transition.ChangeBounds;
+import android.transition.CircularPropagation;
+import android.transition.Explode;
 import android.transition.Fade;
+import android.transition.Slide;
 import android.transition.Transition;
+import android.transition.TransitionManager;
 import android.transition.TransitionSet;
 import android.util.Log;
 import android.view.View;
@@ -38,9 +43,14 @@ public class ProblemActivity extends AppCompatActivity implements View.OnClickLi
     private Button probSchemaButton,probSolutionSchemaButton;
 
     public static Transition makeEnterTransition() {
-        Transition fade = new Fade();
-        fade.excludeTarget(android.R.id.navigationBarBackground, true);
-        fade.excludeTarget(android.R.id.statusBarBackground, true);
+        //Transition fade = new AutoTransition();
+        Transition fade = new Explode();
+        //Transition fade = new Fade();
+        //Transition fade = new Slide();
+        fade.setDuration(500);
+
+      //  fade.excludeTarget(android.R.id.navigationBarBackground, true);
+      //  fade.excludeTarget(android.R.id.statusBarBackground, true);
         return fade;
     }
 
@@ -49,13 +59,15 @@ public class ProblemActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_problem);
 
+
+
         Intent intent = this.getIntent();
         Bundle bundle = intent.getExtras();
         int left = bundle.getInt("titlePosition");
         int problemIdx = bundle.getInt("problemId");
         problem = RunTimeDB.getInstance().getProblems().get(problemIdx);
-
-       // getWindow().setEnterTransition(makeEnterTransition());
+        
+        getWindow().setEnterTransition(makeEnterTransition());
 
         TransitionSet set = new TransitionSet();
         set.setOrdering(TransitionSet.ORDERING_TOGETHER);
