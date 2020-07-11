@@ -34,7 +34,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-
     public static final String TAG = "MainActivity:";
 
     private DrawerLayout drawerLayout;

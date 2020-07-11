@@ -3,9 +3,11 @@ package com.example.buet_edu_project_one_vmasum.Activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActivityOptions;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.transition.Explode;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -17,16 +19,26 @@ import android.widget.TextView;
 
 import com.example.buet_edu_project_one_vmasum.DataBase.RunTimeDB;
 import com.example.buet_edu_project_one_vmasum.R;
+import com.example.buet_edu_project_one_vmasum.Utils.JSONBuilder;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.List;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
+    private static final String TAG = "SplashScreenActivity:";
     private Animation logo,appName;
     private  ImageView logoImage;
     private TextView appNameText;
@@ -78,20 +90,36 @@ public class SplashScreenActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+
+                        /*OutputStreamWriter writer = null;
+                        try {
+                            writer = new OutputStreamWriter(getApplicationContext().openFileOutput("json.txt", Context.MODE_PRIVATE));
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }*/
                         for(DocumentSnapshot snapshot : list)
                         {
                             if(snapshot.exists())
                             {
-                                RunTimeDB.getInstance().addNewProblem(snapshot.getData());
-                                //  Log.w(TAG," title "+ problem.getTitle());
-                                 /*   try {
-                                        JSONObject jsonObject = JSONBuilder.mapToJSON(snapshot.getData());
-                                        RunTimeDB.getInstance().addNewProblem(jsonObject,snapshot.getData());
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }*/
+                                //RunTimeDB.getInstance().addNewProblem(snapshot.getData());
+                                    try {
+                                    JSONObject jsonObject = JSONBuilder.mapToJSON(snapshot.getData());
+                                    RunTimeDB.getInstance().addNewProblem(jsonObject);
+                                    Log.w(TAG,jsonObject.optString("title"));
+                                    // RunTimeDB.getInstance().addNewProblem(jsonObject);
+                                    //writer.write(jsonObject.toString()+"\n");
+                                   // Log.w(TAG,jsonObject.getString("title")+"\n");
+                                   // Log.w(TAG,jsonObject.toString());
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
+                        /*try {
+                            writer.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }*/
                         progressBar.setVisibility(View.GONE);
                         Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                         startActivity(intent);

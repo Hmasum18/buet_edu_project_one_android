@@ -5,4 +5,6 @@
     <color name="bgBlue">#00BFFF</color>
     <color name="textWhite">#FFFFFF</color>
     <color name = "bglightBlue">#D5F6FB</color>
+    <!--form sabit-->
+    <color name="content_color">#535353</color>
 </resources>

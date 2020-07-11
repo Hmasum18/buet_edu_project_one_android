@@ -10,11 +10,11 @@ public class Schema {
     private DefaulMatchtStick defaultMatchStick;
     private ArrayList<Elements> elements = new ArrayList<>();
     private String indicatorColor = "";
-    private boolean isIndicator;
+    private boolean isIndicator = false;
     private String lineColor = "";
-    private double lineOpacity;
-    private double transX;
-    private double transY;
+    private double lineOpacity = 0.0;
+    private double transX = 0.0 ;
+    private double transY = 0.0;
 
     public Schema(Map<String,Object>schemaMap)
     {

@@ -26,6 +26,8 @@ import com.example.buet_edu_project_one_vmasum.DataBase.RunTimeDB;
 import com.example.buet_edu_project_one_vmasum.R;
 import com.example.buet_edu_project_one_vmasum.Utils.Constant;
 
+import org.json.JSONObject;
+
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -51,16 +53,29 @@ public class ProblemsAdapter extends RecyclerView.Adapter<ProblemsAdapter.Proble
         String[] ans_typeDescription = {"Figure Board","Text","MCQ"};
 
         RunTimeDB db = RunTimeDB.getInstance();
-        Problem problem = db.getProblems().get(position);
+        /*Problem problem = db.getProblems().get(position);
         String title = problem.getTitle();
         String author = "-by " + problem.getAuthor()+" on " + DateFormat.getDateTimeInstance().format(new Date(problem.getTimestamp()));
         String category = "Category : " +Constant.CATEGORIES[problem.getCategory()] ;
-        String ansType = "Ans Type: " + ans_typeDescription[problem.getAns_type() ];
+        //Log.w("name :", title);
+        String ansType = "Ans Type: " ;
+        if(problem.getAns_type()!=-1)
+            ansType += ans_typeDescription[problem.getAns_type() ];
         String difficulty ="Difficulty: " +problem.getDifficulty();
-        String series = "Series: " +problem.getSeries();
+        String series = "Series: " +problem.getSeries();*/
+        JSONObject problem = db.getProblemJsons().get(position);
+
+        String title = problem.optString("title");   //default ""
+        String author = "-by " + problem.optString("author")+" on " + DateFormat.getDateTimeInstance().format(new Date(problem.optLong("timestamp")));
+        String category = "Category : " +Constant.CATEGORIES[problem.optInt("category")] ;
+        //Log.w("name :", title);
+        String ansType = "Ans Type: " + ans_typeDescription[problem.optInt("ans_type") ];
+        String difficulty ="Difficulty: " +problem.optInt("difficulty");
+        String series = "Series: " +problem.optString("series");
+
 
         holder.probTitle.setText(title);
-        holder.cat_icon.setImageResource(Constant.CAT_ICONS[problem.getCategory()]);
+        holder.cat_icon.setImageResource(Constant.CAT_ICONS[problem.optInt("category")]) ;
         holder.probAuthor.setText(author);
         holder.probCategory.setText(category);
 
@@ -111,7 +126,7 @@ public class ProblemsAdapter extends RecyclerView.Adapter<ProblemsAdapter.Proble
 
     @Override
     public int getItemCount() {
-        return RunTimeDB.getInstance().getProblems().size();
+        return RunTimeDB.getInstance().getProblemJsons().size();
     }
 
     public class ProblemViewHolder extends RecyclerView.ViewHolder {

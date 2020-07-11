@@ -1,46 +1,76 @@
 package com.example.buet_edu_project_one_vmasum.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.transition.ChangeTransform;
-import androidx.viewpager.widget.ViewPager;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Color;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.transition.ChangeBounds;
-import android.transition.CircularPropagation;
 import android.transition.Explode;
-import android.transition.Fade;
-import android.transition.Slide;
 import android.transition.Transition;
-import android.transition.TransitionManager;
 import android.transition.TransitionSet;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.example.buet_edu_project_one_vmasum.Adapters.AnsImagePagerAdapter;
-import com.example.buet_edu_project_one_vmasum.Adapters.DesImagePagerAdapter;
-import com.example.buet_edu_project_one_vmasum.DataBase.Problem;
+import com.example.buet_edu_project_one_vmasum.Answer.AnswerDialog;
+import com.example.buet_edu_project_one_vmasum.Answer.AnswerLayout;
+import com.example.buet_edu_project_one_vmasum.Answer.BoardMatcher;
 import com.example.buet_edu_project_one_vmasum.DataBase.RunTimeDB;
-import com.example.buet_edu_project_one_vmasum.DataBase.Schema;
+import com.example.buet_edu_project_one_vmasum.Graph.GraphView;
 import com.example.buet_edu_project_one_vmasum.R;
+import com.example.buet_edu_project_one_vmasum.Utils.Constant;
 import com.example.buet_edu_project_one_vmasum.Utils.EnterSharedElementCallback;
 import com.example.buet_edu_project_one_vmasum.Utils.TextSizeTransition;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class ProblemActivity extends AppCompatActivity implements View.OnClickListener{
+import static com.example.buet_edu_project_one_vmasum.Utils.Constant.ANSWER_BOARD;
+import static com.example.buet_edu_project_one_vmasum.Utils.Constant.ANSWER_MCQ;
+import static com.example.buet_edu_project_one_vmasum.Utils.Constant.ANSWER_TEXT;
+
+public class ProblemActivity extends AppCompatActivity {
 
     public static final String TAG = "ProblemActivity:";
-    private Problem problem;
-    private TextView probTitle,probAuthor,probCategory,probDifficulty,probCreateDate,probSeries,probDescription,probStatement;
-    private  TextView probRestriction,probSchema,probOptions,probAns_type,probAnswer,probSolSchema,probExplanation;
-    private ViewPager des_images,ans_images;
-    private Button probSchemaButton,probSolutionSchemaButton;
+    private FloatingActionButton addToBoard;
+    private boolean fabIsOpen = false;
+    private ImageView addCoinToBoard;
+    private ImageView addStickToBoard;
+
+    private GraphView graph;
+
+    private ConstraintLayout graphHolder;
+    private ScrollView scrollQuestion;
+
+    private AnswerLayout answerLayout;
+    private ChipGroup questionTags;
+
+    private Animation fabOpen;
+    private Animation fabClose;
+    private Animation addPaneOpen;
+    private Animation addPaneClose;
+
+    private int answerType;
+    private String answer; // Store Ans Here in case of MCQ or Text
+
+    private TextView statementText;
+    private TextView restrictionText;
+
+    private JSONObject problem;
+
+    private TextView title ;
 
     public static Transition makeEnterTransition() {
         //Transition fade = new AutoTransition();
@@ -58,14 +88,13 @@ public class ProblemActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_problem);
-
-
-
+        ///masum
+        ///start
         Intent intent = this.getIntent();
         Bundle bundle = intent.getExtras();
         int left = bundle.getInt("titlePosition");
         int problemIdx = bundle.getInt("problemId");
-        problem = RunTimeDB.getInstance().getProblems().get(problemIdx);
+        problem = RunTimeDB.getInstance().getProblemJsons().get(problemIdx);
         
         getWindow().setEnterTransition(makeEnterTransition());
 
@@ -74,212 +103,253 @@ public class ProblemActivity extends AppCompatActivity implements View.OnClickLi
 
         Transition changeBounds = new ChangeBounds();
         changeBounds.addTarget(R.id.probActvTitleId);
-        changeBounds.addTarget(problem.getTitle());
+        changeBounds.addTarget(problem.optString("title"));
         set.addTransition(changeBounds);
 
         Transition textSize = new TextSizeTransition();
         textSize.addTarget(R.id.probActvTitleId);
-        textSize.addTarget(problem.getTitle());
+        textSize.addTarget(problem.optString("title"));
         set.addTransition(textSize);
-
-        /*Transition textPadding = new TestPaddingTransition();
-        textSize.addTarget(R.id.probActvTitleId);
-        textSize.addTarget(problem.getTitle());
-        set.addTransition(textPadding);*/
 
         set.setDuration(500);
         getWindow().setSharedElementEnterTransition(set);
         setEnterSharedElementCallback(new EnterSharedElementCallback(this,left));
+        //end
 
+        init(); // Assign id from Resources
 
-        probTitle = findViewById(R.id.probActvTitleId);
-        probAuthor = findViewById(R.id.probActvAuthorId);
-        probCategory = findViewById(R.id.probActvCategoryId);
-        probDifficulty = findViewById(R.id.probActvDifficultyId);
-        probCreateDate = findViewById(R.id.probActvCreationDateId);
-        probSeries = findViewById(R.id.probActvSeriesId);
-        probDescription = findViewById(R.id.probActvDescriptionId);
+        addToBoard.hide(); // Hide FAB by Default, No adding
 
-        des_images = findViewById(R.id.des_image_viewpager);
-        DesImagePagerAdapter adapter = new DesImagePagerAdapter(this,problemIdx);
-        des_images.setAdapter(adapter);
-
-        probStatement = findViewById(R.id.probActvStatementId);
-        probRestriction = findViewById(R.id.probActvRestrictionsId);
-        probSchemaButton = findViewById(R.id.probActvprobSchemaButtonId);
-        probSchema = findViewById(R.id.probActvProblemScemaId);
-        probOptions = findViewById(R.id.probActvOptionsId);
-        probAns_type = findViewById(R.id.probActvAnsTypeId);
-        probAnswer = findViewById(R.id.probActvAnsId);
-        probSolutionSchemaButton = findViewById(R.id.probActvSolSchemaButtonId);
-        probSolSchema = findViewById(R.id.probActvSolSchemaId);
-
-        ans_images = findViewById(R.id.ans_image_viewpager);
-        AnsImagePagerAdapter ansImageAdapter = new AnsImagePagerAdapter(this,problemIdx);
-        ans_images.setAdapter(ansImageAdapter);
-
-        probExplanation = findViewById(R.id.probActvExplantionId);
-
-        init();
+        showProblem();
 
     }
 
-    public void init()
+    public void showProblem()
     {
-        String[] categoryDescription = {"Algebra","Geometry","Number Theory","Combination","Circuit","Graph Theory","Other"};
-        String[] ans_typeDescription = {"Figure Board","Text","MCQ"};
 
-        String title = problem.getTitle();
-        String author = "Author: " + problem.getAuthor();
-        String category = "Category : " +categoryDescription[problem.getCategory()] ;
-        String ansType = "Ans Type: " + ans_typeDescription[problem.getAns_type() ];
-        String difficulty ="Difficulty: " +problem.getDifficulty();
-        String date = "Creation date: " + DateFormat.getDateTimeInstance().format(new Date(problem.getTimestamp()));
-        String series = "Series: " +problem.getSeries();
-        String description = "Description:\n"+problem.getDescription();
-        String statement = "Statement: \n" + problem.getStatement();
-        String restrictions = "Restriction: \n" + problem.getRestrictions();
-        String problemSchema = "Problem Schema: \n\n" + getSchemaString(problem.getProb_schema());
-        String option = "Options:\n ";
-        String ans_type = "Ans type : " + problem.getAns_type();
-        String answer = "Answer : " + problem.getAnswer();
-        String sol_schemas = "Sol schemas: \n";
-        String explantion = "Explanation: \n" +problem.getExplanation() ;
+        try {
+           // problem = new JSONObject(brilliant);
 
+            // Title and other Text
+            String probTitle = problem.getString("title");
+            title.setText(probTitle);
 
-        probTitle.setText(title);
-        Log.w(TAG,"Gravity title"+probTitle.getGravity()+"");
-        probAuthor.setText(author);
-        probCategory.setText(category);
-        probDifficulty.setText(difficulty);
-        probCreateDate.setText(date);
-        probSeries.setText(series);
-        probDescription.setText(description);
-        if(problem.getDes_images().size() == 0)
-            des_images.setVisibility(View.GONE);
-        probStatement.setText(statement);
-        probRestriction.setText(restrictions);
-        probSchemaButton.setOnClickListener(this);
-        probSchema.setText(problemSchema);
-        if(problem.getOptions().size()>0)
-        {
-            int i = 0 ;
-            for(String s : problem.getOptions() ){
-                i++;
-                option+= i+".  "+s+"\n";
+            statementText.setText(problem.getString("statement"));
+
+            String restriction = problem.optString("restrictions");
+            if(restriction.equals(""))
+                restrictionText.setVisibility(View.GONE);
+            else
+                restrictionText.setText(restriction);
+
+            // Tags
+            addTag(problem.getString("series"));
+            addTag("Difficulty: "+problem.getInt("difficulty")+"/10");
+            addTag("by "+problem.optString("author"));
+            if (problem.has("category")) addTag(Constant.CATEGORIES[problem.getInt("category")]);
+
+            // Problem Board
+            JSONObject probSchema = problem.getJSONObject("prob_schema");
+            graph.setBoardContent(probSchema);
+
+            // Setting Default Stick and Default Coin for add Pane
+            JSONObject defaultStick = probSchema.getJSONObject("defaultMatchStick");
+            Drawable stick = graph.setDefaultStick(defaultStick.optBoolean("useSkin"), defaultStick.getString("fillColor"));
+            addStickToBoard.setImageDrawable(stick);
+
+            JSONObject defaultCoin = probSchema.getJSONObject("defaultCoin");
+            Bitmap coin = graph.setDefaultCoin(
+                    defaultCoin.has("useSkin") && defaultCoin.getBoolean("useSkin"), // If not defined, false (by default)
+                    defaultCoin.has("skin") ? defaultCoin.getInt("skin") : -1 , // If not defined, -1 (by default)
+                    defaultCoin.getString("innerColor"),
+                    defaultCoin.getString("outerColor")
+            );
+
+            if (coin != null)
+                addCoinToBoard.setImageBitmap(coin);
+
+            // Solution Type Setting
+            answerType = problem.getInt("ans_type");
+
+            if (answerType == ANSWER_TEXT) {
+                // Set AnswerLayout to have a EditText
+                answerLayout.setAsText();
+
+                // Retrieve Answer from JSON
+                answer = problem.getString("answer");
+
+            } else if (answerType == ANSWER_MCQ) {
+                JSONArray options = problem.getJSONArray("options");
+
+                // Set AnswerLayout to have multiple radio buttons
+                answerLayout.setAsMCQ(options);
+
+                // Set Answer String from answerIndex
+                answer = options.getString(problem.getInt("answer"));
             }
-            probOptions.setText(option);
-        }else probOptions.setVisibility(View.GONE);
-        probAns_type.setText(ans_type);
-        probAnswer.setText(answer);
-        probSolutionSchemaButton.setOnClickListener(this);
-        ArrayList<Schema> list = problem.getSol_schema();
-        int i = 0;
-        for(Schema schema : list)
-        {
-            i++;
-            sol_schemas += "sol "+ i+": \n"+ getSchemaString(schema) +"\n\n";
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        probSolSchema.setText(sol_schemas);
-        if(problem.getAns_images().size() == 0)
-            ans_images.setVisibility(View.GONE);
-        probExplanation.setText(explantion);
-
     }
 
-    private String getSchemaString(Schema schema) {
+    @SuppressLint("ClickableViewAccessibility")
+    private void init() {
+        //masum
+        title = findViewById(R.id.probActvTitleId);
 
+        addToBoard = findViewById(R.id.add_button);
+        addCoinToBoard = findViewById(R.id.default_coin);
+        addStickToBoard = findViewById(R.id.default_stick);
 
-        String bgColor = schema.getBgColor();
-        bgColor = bgColor.replace("0x","#");
-        Log.w(TAG,"bgColor:"+bgColor);
-        probSchema.setBackgroundColor(Color.parseColor(bgColor));
+        graph = findViewById(R.id.graph);
+        graphHolder = findViewById(R.id.graph_holder);
+        scrollQuestion = findViewById(R.id.scroll_ques);
+        answerLayout = findViewById(R.id.answer_container);
+        questionTags = findViewById(R.id.tags);
 
-        StringBuilder stringBuilder = new StringBuilder();
+        statementText = findViewById(R.id.question_text);
+        restrictionText = findViewById(R.id.answer_constrain);
 
-        stringBuilder.append("DefaultCoin: ").append("\n");
-        stringBuilder.append("  innerColor: "+ schema.getDefaultCoin().getInnerColor()).append("\n");
-        stringBuilder.append("  outterColor: " +schema.getDefaultCoin().getOuterColor()).append("\n");
-        stringBuilder.append("  isMust: "+schema.getDefaultCoin().isMust()).append("\n");
-        stringBuilder.append("  skin:"+schema.getDefaultCoin().getSkin()).append("\n");
-        stringBuilder.append("  useSkin: "+schema.getDefaultCoin().isUseSkin() ).append("\n");
+        fabOpen = AnimationUtils.loadAnimation(this, R.anim.add_fab_open);
+        fabClose = AnimationUtils.loadAnimation(this, R.anim.add_fab_close);
+        addPaneOpen = AnimationUtils.loadAnimation(this, R.anim.add_fab_drawer_open);
+        addPaneClose = AnimationUtils.loadAnimation(this, R.anim.add_fab_drawer_close);
 
-        stringBuilder.append("DefaultMatchStick: " ).append("\n");
-        stringBuilder.append("  fillColor :"+ schema.getDefaultMatchStick().getFillColor() ).append("\n");
-        stringBuilder.append("  isMust:"+schema.getDefaultMatchStick().isMust()).append("\n");
-        stringBuilder.append("  useSkin: "+schema.getDefaultMatchStick().isUseSkin() ).append("\n");
-
-        stringBuilder.append("Elements: ").append("\n");
-        int idx = 0;
-        for(Schema.Elements element : schema.getElements())
-        {
-            stringBuilder.append("  id:"+idx).append("\n");
-            if(element.getType().equals("matchStick"))
-            {
-                stringBuilder.append("  Type: matchStick" ).append("\n");
-                stringBuilder.append("      fillColor :"+ element.getFillColor() ).append("\n");
-                stringBuilder.append("      isMust:"+element.isMust()).append("\n");
-                stringBuilder.append("      useSkin: "+element.isUseSkin() ).append("\n");
-                stringBuilder.append("      indHeadX:"+ element.getIndHeadX() ).append("\n");
-                stringBuilder.append("      indHeadY:"+ element.getIndHeadY() ).append("\n");
-                stringBuilder.append("      indTailX:"+ element.getIndTailX()).append("\n");
-                stringBuilder.append("      indTailY:"+ element.getIndTailY()).append("\n");
-                stringBuilder.append("      cantMove:"+ element.isCantMove()).append("\n");
-            }else if(element.getType().equals("coin"))
-            {
-                stringBuilder.append("  Type: coin").append("\n");
-                stringBuilder.append("      innerColor: "+ element.getInnerColor()).append("\n");
-                stringBuilder.append("      outterColor: " +element.getOuterColor()).append("\n");
-                stringBuilder.append("      isMust: "+element.isMust()).append("\n");
-                stringBuilder.append("      skin:"+element.getSkin()).append("\n");
-                stringBuilder.append("      useSkin: "+element.isUseSkin() ).append("\n");
-                stringBuilder.append("      indX:"+ element.getIndX()).append("\n");
-                stringBuilder.append("      indY:"+ element.getIndY()).append("\n");
-                stringBuilder.append("      splash_logo:" +element.getText()).append("\n");
+        fabOpen.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                addCoinToBoard.startAnimation(addPaneOpen);
+                addStickToBoard.startAnimation(addPaneOpen);
             }
-            idx++;
-        }
 
-        stringBuilder.append("indicatorColor: "+ schema.getIndicatorColor() ).append("\n");
-        stringBuilder.append("isIndicator: "+ schema.isIndicator()).append("\n");
-        stringBuilder.append("lineColor: "+ schema.getLineColor()).append("\n");
-        stringBuilder.append("line opacity: "+schema.getLineOpacity()).append("\n\n");
+            @Override
+            public void onAnimationEnd(Animation animation) {}
 
-        return stringBuilder.toString();
-        //stringBuilder.append(""+ ).append("\n");
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+
+        fabClose.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                addCoinToBoard.startAnimation(addPaneClose);
+                addStickToBoard.startAnimation(addPaneClose);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) { }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) { }
+        });
+
+        addPaneOpen.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                addCoinToBoard.setVisibility(View.VISIBLE);
+                addStickToBoard.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {}
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+
+        addPaneClose.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) { }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                addCoinToBoard.setVisibility(View.INVISIBLE);
+                addStickToBoard.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) { }
+        });
+
+        addCoinToBoard.setOnTouchListener((v, event) -> {
+            // Sending (x, y) from Screen LeftTop (not relative to View)
+            graph.addCoin(event.getRawX(), event.getRawY());
+
+            // Close The FAB
+            toggleAddFAB(null);
+
+            // Touch not Handled, Should be Handled by GraphView
+            return false;
+        });
+
+        addStickToBoard.setOnTouchListener((v, event) -> {
+            // Sending (x, y) from Screen LeftTop (not relative to View)
+            graph.addStick(event.getRawX(), event.getRawY());
+
+            // Close the FAB
+            toggleAddFAB(null);
+
+            // Touch not Handled, Should be Handled by GraphView
+            return false;
+        });
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId())
-        {
-            case R.id.probActvprobSchemaButtonId:
-                if(probSchemaButton.getText().equals("Show Problem Schema"))
-                {
-                    probSchema.setVisibility(View.VISIBLE);
-                    probSchemaButton.setText("Hide Problem Schema");
-                }else
-                {
-                    probSchema.setVisibility(View.GONE);
+    public void toggleAddFAB(View view) {
+        if (fabIsOpen) {
+            // If FAB is Open, Close now
+            addToBoard.startAnimation(fabClose);
+            if (view != addToBoard) {
+                addCoinToBoard.setVisibility(View.INVISIBLE);
+                addStickToBoard.setVisibility(View.INVISIBLE);
+            }
+        } else {
+            // FAB is Closed, Open now
+            addToBoard.startAnimation(fabOpen);
+        }
 
-                    probSchemaButton.setText("Show Problem Schema");
-                }
+        // FAB open status is reversed
+        fabIsOpen = !fabIsOpen;
+    }
 
-                break;
-            case R.id.probActvSolSchemaButtonId:
-                if(probSolutionSchemaButton.getText().equals("Show Sol Schema"))
-                {
-                    probSolSchema.setVisibility(View.VISIBLE);
-                    probSolutionSchemaButton.setText("Hide Sol Schema");
-                }else
-                {
-                    probSolSchema.setVisibility(View.GONE);
+    private void addTag(String tagText) {
+        Chip tag = new Chip(this);
+        tag.setText(tagText);
 
-                    probSolutionSchemaButton.setText("Show Sol Schema");
-                }
-                break;
+        // Add Chips to Chip Holder
+        questionTags.addView(tag);
+    }
+
+    public void showDetails(View v) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        try {
+            // Set Series As Title, Description as Message in AlertDialog
+            builder.setTitle(problem.getString("series"))
+                    .setMessage(problem.getString("description"))
+                    .setCancelable(true)
+                    .show();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
+
+    public void checkAnswer(View v) {
+        AnswerDialog dialog = new AnswerDialog(this, problem.optString("explanation"));
+        switch (answerType) {
+            // Text and MCQ Checking Process is Same
+            case ANSWER_TEXT:
+            case ANSWER_MCQ: {
+                dialog.showDialog(answer.equals(answerLayout.getAsText()));
+                break;
+            }
+            case ANSWER_BOARD: {
+                // Match Board in New AsyncTask Thread
+                new BoardMatcher(dialog, graph, problem.optJSONArray("sol_schema")).execute();
+                break;
+            }
+        }
+    }
+
+
 
     @Override
     public void onBackPressed() {
