@@ -68,6 +68,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
+                ///after compelting animation step 2 is to get data form firestore
                 getDataFromFireStore();
             }
 
@@ -97,11 +98,11 @@ public class SplashScreenActivity extends AppCompatActivity {
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         }*/
+                        RunTimeDB.getInstance().getProblemJsons().clear();
                         for(DocumentSnapshot snapshot : list)
                         {
                             if(snapshot.exists())
                             {
-                                //RunTimeDB.getInstance().addNewProblem(snapshot.getData());
                                     try {
                                     JSONObject jsonObject = JSONBuilder.mapToJSON(snapshot.getData());
                                     RunTimeDB.getInstance().addNewProblem(jsonObject);

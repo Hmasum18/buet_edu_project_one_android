@@ -34,7 +34,6 @@ import java.util.Date;
 public class ProblemsAdapter extends RecyclerView.Adapter<ProblemsAdapter.ProblemViewHolder> {
 
     private Activity activity;
-    private  int  lastScaleAnimatedPosition = -1;
 
     public ProblemsAdapter(Activity activity) {
         this.activity = activity;
@@ -53,16 +52,6 @@ public class ProblemsAdapter extends RecyclerView.Adapter<ProblemsAdapter.Proble
         String[] ans_typeDescription = {"Figure Board","Text","MCQ"};
 
         RunTimeDB db = RunTimeDB.getInstance();
-        /*Problem problem = db.getProblems().get(position);
-        String title = problem.getTitle();
-        String author = "-by " + problem.getAuthor()+" on " + DateFormat.getDateTimeInstance().format(new Date(problem.getTimestamp()));
-        String category = "Category : " +Constant.CATEGORIES[problem.getCategory()] ;
-        //Log.w("name :", title);
-        String ansType = "Ans Type: " ;
-        if(problem.getAns_type()!=-1)
-            ansType += ans_typeDescription[problem.getAns_type() ];
-        String difficulty ="Difficulty: " +problem.getDifficulty();
-        String series = "Series: " +problem.getSeries();*/
         JSONObject problem = db.getProblemJsons().get(position);
 
         String title = problem.optString("title");   //default ""
@@ -78,6 +67,7 @@ public class ProblemsAdapter extends RecyclerView.Adapter<ProblemsAdapter.Proble
         holder.cat_icon.setImageResource(Constant.CAT_ICONS[problem.optInt("category")]) ;
         holder.probAuthor.setText(author);
         holder.probCategory.setText(category);
+
 
         ValueAnimator valueAnimator = ValueAnimator.ofFloat(0f,50f);
         valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator()); // increase the speed first and then decrease
@@ -111,17 +101,6 @@ public class ProblemsAdapter extends RecyclerView.Adapter<ProblemsAdapter.Proble
             }
         });
 
-       /* if(position>lastScaleAnimatedPosition)
-        {
-            //set cardview aninatin
-            ScaleAnimation scaleAnimation = new ScaleAnimation(0f,1f,0f,1f,
-                    Animation.RELATIVE_TO_SELF,0.5f,
-                    Animation.RELATIVE_TO_SELF,0.5f);
-            scaleAnimation.setDuration(800);
-            holder.probCardView.startAnimation(scaleAnimation);
-            lastScaleAnimatedPosition = position;
-        }*/
-
     }
 
     @Override
@@ -141,8 +120,6 @@ public class ProblemsAdapter extends RecyclerView.Adapter<ProblemsAdapter.Proble
             probCategory = itemView.findViewById(R.id.probAdptrCategoryId);
             succssRateBar = itemView.findViewById(R.id.probAdptrSuccssRateBar);
             probSuccessRate = itemView.findViewById(R.id.probAdptrSuccssRate);
-          //  probAnsType = itemView.findViewById(R.id.probAdptrAndTypeId);
-          //  probDifficulty = itemView.findViewById(R.id.probAdptrDifficultyId);
             probSeries = itemView.findViewById(R.id.probAdptrSeriesId);
             probAuthor = itemView.findViewById(R.id.probAdptrAuthorId);
             probCardView = itemView.findViewById(R.id.probAdptrCardViewId);

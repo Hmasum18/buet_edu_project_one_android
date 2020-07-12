@@ -14,6 +14,7 @@ import android.transition.Explode;
 import android.transition.Transition;
 import android.transition.TransitionSet;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -73,14 +74,9 @@ public class ProblemActivity extends AppCompatActivity {
     private TextView title ;
 
     public static Transition makeEnterTransition() {
-        //Transition fade = new AutoTransition();
         Transition fade = new Explode();
-        //Transition fade = new Fade();
-        //Transition fade = new Slide();
-        fade.setDuration(500);
-
-      //  fade.excludeTarget(android.R.id.navigationBarBackground, true);
-      //  fade.excludeTarget(android.R.id.statusBarBackground, true);
+        fade.setDuration(600);
+        fade.setInterpolator(new AccelerateDecelerateInterpolator());
         return fade;
     }
 
@@ -111,7 +107,9 @@ public class ProblemActivity extends AppCompatActivity {
         textSize.addTarget(problem.optString("title"));
         set.addTransition(textSize);
 
-        set.setDuration(500);
+        set.setDuration(600);
+        set.setInterpolator(new AccelerateDecelerateInterpolator());
+
         getWindow().setSharedElementEnterTransition(set);
         setEnterSharedElementCallback(new EnterSharedElementCallback(this,left));
         //end
@@ -353,7 +351,7 @@ public class ProblemActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-       // finishAfterTransition();
+        finishAfterTransition();
         super.onBackPressed();
     }
 }

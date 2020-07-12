@@ -9,8 +9,6 @@ import java.util.ArrayList;
 public class RunTimeDB {
 
     private static RunTimeDB runTimeDB = null ;
-
-    private ArrayList<Problem> problems = new ArrayList<>();
     private ArrayList<JSONObject> problemJsons = new ArrayList<>();
 
 
@@ -24,16 +22,6 @@ public class RunTimeDB {
     {
         problemJsons.add(object);
     }
-
-    public void addNewProblem(Problem problem)
-    {
-        problems.add(problem);
-    }
-
-    public ArrayList<Problem> getProblems() { return problems; }
-
-
-
     public ArrayList<JSONObject> getProblemJsons() {
         return problemJsons;
     }

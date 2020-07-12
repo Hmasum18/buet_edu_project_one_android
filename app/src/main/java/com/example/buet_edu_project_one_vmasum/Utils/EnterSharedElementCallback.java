@@ -28,16 +28,12 @@ public class EnterSharedElementCallback extends SharedElementCallback {
     @Override
     public void onSharedElementStart(List<String> sharedElementNames, List<View> sharedElements, List<View> sharedElementSnapshots) {
         TextView textView = (TextView) sharedElements.get(0);
-        // Setup the TextView's start values.
-      //  Log.w(TAG,"start:"+mStartTextSize);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, mStartTextSize);
-       // Log.w(TAG,"Start left:"+mStartLeft);
-        textView.setLeft(mStartLeft+110);
+        textView.setLeft(mStartLeft+113);
     }
 
     @Override
     public void onSharedElementEnd(List<String> sharedElementNames, List<View> sharedElements, List<View> sharedElementSnapshots) {
-        //Log.i(TAG, "=== onSharedElementEnd(List<String>, List<View>, List<View>)");
         TextView textView = (TextView) sharedElements.get(0);
 
         // Record the TextView's old width/height.

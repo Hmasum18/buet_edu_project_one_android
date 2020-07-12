@@ -23,14 +23,14 @@
 
             <TextView
                 android:id="@+id/probAdptrTitleId"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_margin="10dp"
                 android:text="problem title"
                 android:textColor="@color/bgBlue"
                 android:textSize="25sp"
                 android:textStyle="bold"
+                android:textAlignment="center"
                 android:transitionName="problemTitleTransition" />
 
             <View

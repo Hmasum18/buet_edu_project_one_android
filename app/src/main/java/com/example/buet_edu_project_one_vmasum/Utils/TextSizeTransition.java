@@ -2,6 +2,7 @@ package com.example.buet_edu_project_one_vmasum.Utils;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -64,7 +65,6 @@ public class TextSizeTransition extends Transition {
         TextView textView = (TextView) transitionValues.view;
 
         float fontSize = textView.getTextSize();  //get the font size in source activity
-       // TextResizeData data = new TextResizeData(textView); //get the padding to get the current position in source activity
         transitionValues.values.put(TEXTVIEW_FONT,fontSize);
     }
 

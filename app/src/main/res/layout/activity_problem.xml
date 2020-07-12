@@ -12,18 +12,20 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         tools:context=".Activities.MainActivity"
-        android:padding="5dp">
+        android:padding="5dp"
+        >
 
         <TextView
             android:id="@+id/probActvTitleId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="5dp"
+            android:layout_margin="10dp"
             android:text="Problem title"
             android:textColor="@color/bgBlue"
             android:textSize="30sp"
             android:textStyle="bold"
+            android:textAlignment="center"
             android:transitionName="problemTitleTransition"
             />
 
