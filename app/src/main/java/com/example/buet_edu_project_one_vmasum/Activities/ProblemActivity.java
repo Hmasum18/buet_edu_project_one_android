@@ -13,13 +13,18 @@ import android.transition.ChangeBounds;
 import android.transition.Explode;
 import android.transition.Transition;
 import android.transition.TransitionSet;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.buet_edu_project_one_vmasum.Answer.AnswerDialog;
 import com.example.buet_edu_project_one_vmasum.Answer.AnswerLayout;
@@ -54,6 +59,7 @@ public class ProblemActivity extends AppCompatActivity {
 
     private ConstraintLayout graphHolder;
     private ScrollView scrollQuestion;
+    private LinearLayout questionImageHolder;
 
     private AnswerLayout answerLayout;
     private ChipGroup questionTags;
@@ -128,27 +134,40 @@ public class ProblemActivity extends AppCompatActivity {
         try {
            // problem = new JSONObject(brilliant);
 
-            // Title and other Text
+            // Title and other Text (MUST)
             String probTitle = problem.getString("title");
             title.setText(probTitle);
 
+            // MUST
             statementText.setText(problem.getString("statement"));
 
+            // OPTIONAL
             String restriction = problem.optString("restrictions");
             if(restriction.equals(""))
                 restrictionText.setVisibility(View.GONE);
-            else
+            else {
+                restrictionText.setVisibility(View.VISIBLE);
                 restrictionText.setText(restriction);
+            }
 
             // Tags
-            addTag(problem.getString("series"));
-            addTag("Difficulty: "+problem.getInt("difficulty")+"/10");
+            addTag(problem.optString("series"));
+            addTag("Difficulty: "+problem.optInt("difficulty")+"/10");
             addTag("by "+problem.optString("author"));
             if (problem.has("category")) addTag(Constant.CATEGORIES[problem.getInt("category")]);
 
             // Problem Board
             JSONObject probSchema = problem.getJSONObject("prob_schema");
             graph.setBoardContent(probSchema);
+
+            // Description Image
+            if (problem.has("ans_images")) {
+                Log.d(TAG, "showProblem: Adding Images");
+                JSONArray question_images = problem.getJSONArray("ans_images");
+
+                for (int i=0; i<question_images.length(); i++)
+                    addDescriptionImage(question_images.getString(i));
+            }
 
             // Setting Default Stick and Default Coin for add Pane
             JSONObject defaultStick = probSchema.getJSONObject("defaultMatchStick");
@@ -167,7 +186,7 @@ public class ProblemActivity extends AppCompatActivity {
                 addCoinToBoard.setImageBitmap(coin);
 
             // Solution Type Setting
-            answerType = problem.getInt("ans_type");
+            answerType = problem.optInt("ans_type");
 
             if (answerType == ANSWER_TEXT) {
                 // Set AnswerLayout to have a EditText
@@ -204,6 +223,7 @@ public class ProblemActivity extends AppCompatActivity {
         scrollQuestion = findViewById(R.id.scroll_ques);
         answerLayout = findViewById(R.id.answer_container);
         questionTags = findViewById(R.id.tags);
+        questionImageHolder = findViewById(R.id.question_image_holder);
 
         statementText = findViewById(R.id.question_text);
         restrictionText = findViewById(R.id.answer_constrain);
@@ -315,6 +335,14 @@ public class ProblemActivity extends AppCompatActivity {
 
         // Add Chips to Chip Holder
         questionTags.addView(tag);
+    }
+
+    private void addDescriptionImage(String imageLink) {
+        ImageView image = new ImageView(this);
+        image.setImageResource(R.drawable.coin_skin_3);
+        image.setOnClickListener((v) -> Toast.makeText(this, imageLink, Toast.LENGTH_SHORT).show());
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        questionImageHolder.addView(image, params);
     }
 
     public void showDetails(View v) {

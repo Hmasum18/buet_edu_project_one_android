@@ -15,49 +15,48 @@
         android:padding="5dp"
         >
 
-        <TextView
-            android:id="@+id/probActvTitleId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="10dp"
-            android:text="Problem title"
-            android:textColor="@color/bgBlue"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            android:textAlignment="center"
-            android:transitionName="problemTitleTransition"
-            />
-
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbarFadeDuration="@android:integer/config_shortAnimTime">
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal|center_vertical"
+            android:orientation="horizontal">
 
-                <com.google.android.material.chip.ChipGroup
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fadeScrollbars="true"
-                    android:fadingEdge="horizontal"
-                    app:singleLine="true"
-                    android:id="@+id/tags" />
-            </HorizontalScrollView>
+            <TextView
+                android:id="@+id/probActvTitleId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:text="Problem title"
+                android:textAlignment="center"
+                android:textColor="@color/bgBlue"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:transitionName="problemTitleTransition" />
 
             <ImageButton
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_alignParentEnd="true"
                 android:layout_marginEnd="3dp"
+                android:background="@android:color/transparent"
                 android:onClick="showDetails"
                 android:scaleType="fitCenter"
-                android:src="@drawable/settings" />
+                android:src="@drawable/ic_info_black"
+                android:tint="#4FC3F7" />
+        </LinearLayout>
 
-
-        </RelativeLayout>
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbarFadeDuration="@android:integer/config_shortAnimTime">
+            <com.google.android.material.chip.ChipGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fadeScrollbars="true"
+                android:fadingEdge="horizontal"
+                app:singleLine="true"
+                android:id="@+id/tags" />
+        </HorizontalScrollView>
 
         <Space
             android:layout_width="match_parent"
@@ -142,6 +141,18 @@
             style="@style/ContentText"
             android:id="@+id/question_text"
             />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:id="@+id/question_image_holder"
+                />
+        </HorizontalScrollView>
 
         <TextView
             android:layout_width="match_parent"
