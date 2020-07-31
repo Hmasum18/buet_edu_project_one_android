@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.buet_edu_project_one_vmasum.Activities.ProblemActivity;
 import com.example.buet_edu_project_one_vmasum.R;
 
 import org.json.JSONArray;
@@ -55,6 +56,7 @@ public class AnswerDialog {
                         .load(link)
                         .fitCenter()
                         .into(image);
+                image.setOnClickListener(((ProblemActivity) context)::showSingleImage);
                 imageHolder.addView(image, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
             }
 

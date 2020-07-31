@@ -163,10 +163,10 @@ public class ProblemActivity extends AppCompatActivity {
 
             // Description Image
             /// TEST
-            JSONArray mockImages = new JSONArray();
-            mockImages.put("https://bueteduproject1.s3.ap-south-1.amazonaws.com/problem_images/1593656976430_d_0.jpg");
-            mockImages.put("https://bueteduproject1.s3.ap-south-1.amazonaws.com/problem_images/1593656976430_a_1.jpg");
-            problem.put("des_images", mockImages);
+//            JSONArray mockImages = new JSONArray();
+//            mockImages.put("https://bueteduproject1.s3.ap-south-1.amazonaws.com/problem_images/1593656976430_d_0.jpg");
+//            mockImages.put("https://bueteduproject1.s3.ap-south-1.amazonaws.com/problem_images/1593656976430_a_1.jpg");
+//            problem.put("des_images", mockImages);
 
             if (problem.has("des_images")) {
                 Log.d(TAG, "showProblem: Adding Images");
