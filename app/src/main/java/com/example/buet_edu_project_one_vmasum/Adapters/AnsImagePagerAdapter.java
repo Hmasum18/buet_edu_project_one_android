@@ -31,7 +31,7 @@ public class AnsImagePagerAdapter extends PagerAdapter {
     {
         this.context = context;
         this.idx = idx;
-        problem = RunTimeDB.getInstance().getProblems().get(idx);
+//        problem = RunTimeDB.getInstance().getProblems().get(idx);
     }
 
     @Override

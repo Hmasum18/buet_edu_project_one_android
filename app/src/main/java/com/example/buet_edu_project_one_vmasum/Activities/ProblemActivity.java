@@ -13,14 +13,19 @@ import android.transition.ChangeBounds;
 import android.transition.Explode;
 import android.transition.Transition;
 import android.transition.TransitionSet;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.buet_edu_project_one_vmasum.Answer.AnswerDialog;
 import com.example.buet_edu_project_one_vmasum.Answer.AnswerLayout;
 import com.example.buet_edu_project_one_vmasum.Answer.BoardMatcher;
@@ -54,6 +59,8 @@ public class ProblemActivity extends AppCompatActivity {
 
     private ConstraintLayout graphHolder;
     private ScrollView scrollQuestion;
+    private HorizontalScrollView scrollDescriptionImages;
+    private LinearLayout questionImageHolder;
 
     private AnswerLayout answerLayout;
     private ChipGroup questionTags;
@@ -128,27 +135,47 @@ public class ProblemActivity extends AppCompatActivity {
         try {
            // problem = new JSONObject(brilliant);
 
-            // Title and other Text
+            // Title and other Text (MUST)
             String probTitle = problem.getString("title");
             title.setText(probTitle);
 
+            // MUST
             statementText.setText(problem.getString("statement"));
 
+            // OPTIONAL
             String restriction = problem.optString("restrictions");
             if(restriction.equals(""))
                 restrictionText.setVisibility(View.GONE);
-            else
+            else {
+                restrictionText.setVisibility(View.VISIBLE);
                 restrictionText.setText(restriction);
+            }
 
             // Tags
-            addTag(problem.getString("series"));
-            addTag("Difficulty: "+problem.getInt("difficulty")+"/10");
+            addTag(problem.optString("series"));
+            addTag("Difficulty: "+problem.optInt("difficulty")+"/10");
             addTag("by "+problem.optString("author"));
             if (problem.has("category")) addTag(Constant.CATEGORIES[problem.getInt("category")]);
 
             // Problem Board
             JSONObject probSchema = problem.getJSONObject("prob_schema");
             graph.setBoardContent(probSchema);
+
+            // Description Image
+            /// TEST
+//            JSONArray mockImages = new JSONArray();
+//            mockImages.put("https://bueteduproject1.s3.ap-south-1.amazonaws.com/problem_images/1593656976430_d_0.jpg");
+//            mockImages.put("https://bueteduproject1.s3.ap-south-1.amazonaws.com/problem_images/1593656976430_a_1.jpg");
+//            problem.put("des_images", mockImages);
+
+            if (problem.has("des_images")) {
+                Log.d(TAG, "showProblem: Adding Images");
+                scrollDescriptionImages.setVisibility(View.VISIBLE);
+                JSONArray description_images = problem.getJSONArray("des_images");
+
+                for (int i=0; i<description_images.length(); i++)
+                    addDescriptionImage(description_images.getString(i));
+            }
 
             // Setting Default Stick and Default Coin for add Pane
             JSONObject defaultStick = probSchema.getJSONObject("defaultMatchStick");
@@ -167,7 +194,7 @@ public class ProblemActivity extends AppCompatActivity {
                 addCoinToBoard.setImageBitmap(coin);
 
             // Solution Type Setting
-            answerType = problem.getInt("ans_type");
+            answerType = problem.optInt("ans_type");
 
             if (answerType == ANSWER_TEXT) {
                 // Set AnswerLayout to have a EditText
@@ -204,6 +231,8 @@ public class ProblemActivity extends AppCompatActivity {
         scrollQuestion = findViewById(R.id.scroll_ques);
         answerLayout = findViewById(R.id.answer_container);
         questionTags = findViewById(R.id.tags);
+        scrollDescriptionImages = findViewById(R.id.question_image_scroll);
+        questionImageHolder = findViewById(R.id.question_image_holder);
 
         statementText = findViewById(R.id.question_text);
         restrictionText = findViewById(R.id.answer_constrain);
@@ -290,6 +319,8 @@ public class ProblemActivity extends AppCompatActivity {
             // Touch not Handled, Should be Handled by GraphView
             return false;
         });
+
+        scrollDescriptionImages.setVisibility(View.GONE);
     }
 
     public void toggleAddFAB(View view) {
@@ -317,6 +348,27 @@ public class ProblemActivity extends AppCompatActivity {
         questionTags.addView(tag);
     }
 
+    private void addDescriptionImage(String imageLink) {
+        ImageView image = new ImageView(this);
+        Glide.with(this)
+                .load(imageLink)
+                .fitCenter()
+                .into(image);
+        // image.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        image.setOnClickListener(this::showSingleImage);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        questionImageHolder.addView(image, params);
+    }
+
+    public void showSingleImage(View v) {
+        ImageView view = new ImageView(this);
+        view.setImageDrawable(((ImageView)v).getDrawable());
+        new AlertDialog.Builder(this)
+                .setTitle("Image")
+                .setView(view)
+                .show();
+    }
+
     public void showDetails(View v) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         try {
@@ -331,7 +383,7 @@ public class ProblemActivity extends AppCompatActivity {
     }
 
     public void checkAnswer(View v) {
-        AnswerDialog dialog = new AnswerDialog(this, problem.optString("explanation"));
+        AnswerDialog dialog = new AnswerDialog(this, problem.optString("explanation"), problem.optJSONArray("ans_images"));
         switch (answerType) {
             // Text and MCQ Checking Process is Same
             case ANSWER_TEXT:
