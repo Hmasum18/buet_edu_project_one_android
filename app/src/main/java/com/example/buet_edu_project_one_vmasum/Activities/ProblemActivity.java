@@ -26,6 +26,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.buet_edu_project_one_vmasum.Answer.AnswerDialog;
 import com.example.buet_edu_project_one_vmasum.Answer.AnswerLayout;
 import com.example.buet_edu_project_one_vmasum.Answer.BoardMatcher;
@@ -59,6 +60,7 @@ public class ProblemActivity extends AppCompatActivity {
 
     private ConstraintLayout graphHolder;
     private ScrollView scrollQuestion;
+    private HorizontalScrollView scrollDescriptionImages;
     private LinearLayout questionImageHolder;
 
     private AnswerLayout answerLayout;
@@ -161,12 +163,19 @@ public class ProblemActivity extends AppCompatActivity {
             graph.setBoardContent(probSchema);
 
             // Description Image
-            if (problem.has("ans_images")) {
-                Log.d(TAG, "showProblem: Adding Images");
-                JSONArray question_images = problem.getJSONArray("ans_images");
+            /// TEST
+//            JSONArray mockImages = new JSONArray();
+//            mockImages.put("https://bueteduproject1.s3.ap-south-1.amazonaws.com/problem_images/1593656976430_d_0.jpg");
+//            mockImages.put("https://bueteduproject1.s3.ap-south-1.amazonaws.com/problem_images/1593656976430_a_1.jpg");
+//            problem.put("des_images", mockImages);
 
-                for (int i=0; i<question_images.length(); i++)
-                    addDescriptionImage(question_images.getString(i));
+            if (problem.has("des_images")) {
+                Log.d(TAG, "showProblem: Adding Images");
+                scrollDescriptionImages.setVisibility(View.VISIBLE);
+                JSONArray description_images = problem.getJSONArray("des_images");
+
+                for (int i=0; i<description_images.length(); i++)
+                    addDescriptionImage(description_images.getString(i));
             }
 
             // Setting Default Stick and Default Coin for add Pane
@@ -223,6 +232,7 @@ public class ProblemActivity extends AppCompatActivity {
         scrollQuestion = findViewById(R.id.scroll_ques);
         answerLayout = findViewById(R.id.answer_container);
         questionTags = findViewById(R.id.tags);
+        scrollDescriptionImages = findViewById(R.id.question_image_scroll);
         questionImageHolder = findViewById(R.id.question_image_holder);
 
         statementText = findViewById(R.id.question_text);
@@ -310,6 +320,8 @@ public class ProblemActivity extends AppCompatActivity {
             // Touch not Handled, Should be Handled by GraphView
             return false;
         });
+
+        scrollDescriptionImages.setVisibility(View.GONE);
     }
 
     public void toggleAddFAB(View view) {
@@ -339,10 +351,14 @@ public class ProblemActivity extends AppCompatActivity {
 
     private void addDescriptionImage(String imageLink) {
         ImageView image = new ImageView(this);
-        image.setImageResource(R.drawable.coin_skin_3);
+        Glide.with(this)
+                .load(imageLink)
+                .centerCrop()
+                .into(image);
+        // image.setScaleType(ImageView.ScaleType.FIT_CENTER);
         image.setOnClickListener((v) -> Toast.makeText(this, imageLink, Toast.LENGTH_SHORT).show());
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        questionImageHolder.addView(image, params);
+//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        questionImageHolder.addView(image/*, params*/);
     }
 
     public void showDetails(View v) {
