@@ -24,7 +24,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.buet_edu_project_one_vmasum.Answer.AnswerDialog;
@@ -164,10 +163,10 @@ public class ProblemActivity extends AppCompatActivity {
 
             // Description Image
             /// TEST
-//            JSONArray mockImages = new JSONArray();
-//            mockImages.put("https://bueteduproject1.s3.ap-south-1.amazonaws.com/problem_images/1593656976430_d_0.jpg");
-//            mockImages.put("https://bueteduproject1.s3.ap-south-1.amazonaws.com/problem_images/1593656976430_a_1.jpg");
-//            problem.put("des_images", mockImages);
+            JSONArray mockImages = new JSONArray();
+            mockImages.put("https://bueteduproject1.s3.ap-south-1.amazonaws.com/problem_images/1593656976430_d_0.jpg");
+            mockImages.put("https://bueteduproject1.s3.ap-south-1.amazonaws.com/problem_images/1593656976430_a_1.jpg");
+            problem.put("des_images", mockImages);
 
             if (problem.has("des_images")) {
                 Log.d(TAG, "showProblem: Adding Images");
@@ -353,12 +352,21 @@ public class ProblemActivity extends AppCompatActivity {
         ImageView image = new ImageView(this);
         Glide.with(this)
                 .load(imageLink)
-                .centerCrop()
+                .fitCenter()
                 .into(image);
         // image.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        image.setOnClickListener((v) -> Toast.makeText(this, imageLink, Toast.LENGTH_SHORT).show());
-//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        questionImageHolder.addView(image/*, params*/);
+        image.setOnClickListener(this::showSingleImage);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        questionImageHolder.addView(image, params);
+    }
+
+    public void showSingleImage(View v) {
+        ImageView view = new ImageView(this);
+        view.setImageDrawable(((ImageView)v).getDrawable());
+        new AlertDialog.Builder(this)
+                .setTitle("Image")
+                .setView(view)
+                .show();
     }
 
     public void showDetails(View v) {
@@ -375,7 +383,7 @@ public class ProblemActivity extends AppCompatActivity {
     }
 
     public void checkAnswer(View v) {
-        AnswerDialog dialog = new AnswerDialog(this, problem.optString("explanation"));
+        AnswerDialog dialog = new AnswerDialog(this, problem.optString("explanation"), problem.optJSONArray("ans_images"));
         switch (answerType) {
             // Text and MCQ Checking Process is Same
             case ANSWER_TEXT:
